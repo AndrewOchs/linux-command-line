@@ -1,0 +1,112 @@
+Main Shell:
+Parse command line
+check for valid args
+recognize if input is help, exit, pwd, or cd.
+recognize if input is background process, pipe, or external cmd
+
+help()
+simply list information about all (current) commands.
+
+exit()
+exit Shell (use exit())
+
+pwd()
+get current working directory
+print to user
+
+cd()
+ensure directory exists
+find path to directory
+change to that directory
+
+wait()
+For each background process {
+    Call waitpid() to wait
+    Once finished, remove it from list of background processes
+}
+
+
+For the execute external command fct {
+    Fork a process with fork()
+    In the child {
+        Check for redirection {
+            use dup2 for fds
+            if > open file with write perms & redirect stdout
+            if < open file with read perms and redirect stdin
+            Remove redirection parts from args
+        }
+        if it contains a / use execv()
+        otherwise search through directories in PATH {
+            Construct path to executable, check with access()
+            run execv()
+        }
+    }
+    parent process wait for child
+    return exit status
+}
+
+
+For the execute_pipe_cmd() {
+    parse args to find | {
+        split args into command 1 and 2
+    }
+    create pipe using pipe()
+    fork the first child for cmd1 {
+        redirect stdout to write end of pipe
+        close pipe ends
+        execute command 1
+    }
+    fork the second child for cmd2 {
+        redirect stdin to read end of pipe
+        close unused pipe ends
+        execute command2
+    }
+    close ends of pipe
+    wait for child to complete
+}
+
+** execute_pipe_cmd has been reworked to just be done with multiple pipes
+
+Week 4:
+
+Background processes:
+For commands ending in & {
+    Parse the input and check if last arg is &
+    Set command to run in Background
+    Fork a process{
+        In the child{
+            Execute the command using execv()
+        }
+        In the parent{
+            Return to prompt 
+        }
+    }
+}
+
+Multiple Pipes:
+For the execute_multiple_pipes() fct {
+    Parse args to find all instances of |
+    Split args into multiple commands
+    Create array of pipes, one for each pair of commands
+    For each command{
+        Fork a process
+        In each child process{
+            For the first command{ 
+                Redirect stdout to the write end of first pipe
+            }
+            For intermediate commands {
+                Redirect stdin to the read end of the previous pipe
+                Redirect stdout to the write end of the next pipe
+            }
+            For the last command{
+                Redirect stdin to the read end of the last pipe
+            }
+            Execute command using execv()
+        }
+        In the parent process {
+            Close pipe ends
+            Wait for each child process to complete
+        }
+    }
+}
+
