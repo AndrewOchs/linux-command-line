@@ -1,11 +1,11 @@
-Custom Command Line Interface:
+# Custom Command Line Interface:
 
 A Unix-like shell implementation with support for pipes, redirection, and background processes, built in C.
 Overview
 This project is a custom shell implementation that replicates core functionalities of standard Unix/Linux shells. It provides a command-line interface where users can execute commands with arguments, chain commands using pipes, redirect input/output, and run processes in the background.
 
 
-Features:
+# Features:
 
  * Command Execution: Execute programs with arguments
  * Pipe Support: Chain multiple commands using the pipe operator (|)
@@ -14,7 +14,7 @@ Features:
  * Built-in Commands: Support for built-in shell commands
  * Signal Handling: Properly handle keyboard interrupts and other signals
 
-Implementation Details
+# Implementation Details
 
 This shell was built using C and implements system calls such as fork(), exec(), pipe(), and dup2() to handle process creation and communication. 
 Key components include:
